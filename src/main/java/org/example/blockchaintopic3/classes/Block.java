@@ -1,73 +1,83 @@
 package org.example.blockchaintopic3.classes;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class Block {
-    private int id;
-    private String productCode;
-    private String title;
-    private long timestamp;
-    private double price;
-    private String description;
-    private String category;
-    private int previousRecordId;
+    private String hash;
+    private final String previousHash;
+    private final long timestamp;
+    private int nonce = 0;
+    private final int id = 0;
+    private final String productCode;
+    private final String title;
+    private final double price;
+    private final String description;
+    private final String category;
 
-    public Block(int id, String productCode, String title, long timestamp, double price, String description, String category, int previousRecordId) {
-        this.id = id;
-        this.productCode = productCode;
-        this.title = title;
-        this.timestamp = timestamp;
-        this.price = price;
-        this.description = description;
-        this.category = category;
-        this.previousRecordId = previousRecordId;
+    public Block(Builder builder) {
+        this.previousHash = builder.previousHash;
+        this.timestamp = builder.timestamp;
+        this.productCode = builder.productCode;
+        this.title = builder.title;
+        this.price = builder.price;
+        this.description = builder.description;
+        this.category = builder.category;
+        this.hash = calculateBlockHash();
     }
 
-    //getter - setters
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-    public String getProductCode() {
-        return productCode;
-    }
-    public void setProductCode(String productCode) {
-        this.productCode = productCode;
-    }
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
+    static public class Builder {
+        private final String previousHash;
+        private final long timestamp;
+        private int nonce = 0;
+        private final int id = 0;
+        private final String productCode;
+        private final String title;
+        private final double price;
+        private final String description;
+        private final String category;
 
+        public Builder(String previousHash, String productCode, String title, long timestamp, double price, String description, String category) {
+            this.previousHash = previousHash;
+            this.timestamp = timestamp;
+            this.productCode = productCode;
+            this.title = title;
+            this.price = price;
+            this.description = description;
+            this.category = category;
+        }
+
+        public Block build(){
+            return new Block(this);
+        }
     }
-    public long getTimestamp() {
-        return timestamp;
+
+    public String mineBlock(int prefix){
+        String prefixString = new String(new char[prefix]).replace('\0','0');
+        while (!hash.substring(0,prefix).equals(prefixString)){
+            nonce++;
+            hash = calculateBlockHash();
+        }
+        return hash;
     }
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-    public double getPrice() {
-        return price;
-    }
-    public void setPrice(double price) {
-        this.price = price;
-    }
-    public String getDescription() {
-        return description;
-    }
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    public String getCategory() {
-        return category;
-    }
-    public void setCategory(String category) {
-        this.category = category;
-    }
-    public int getPreviousRecordId() {
-        return previousRecordId;
-    }
-    public void setPreviousRecordId(int previousRecordId) {
-        this.previousRecordId = previousRecordId;
+
+    public String calculateBlockHash() {
+        String dataToHash = previousHash + timestamp + productCode + price + title + description + category + nonce;
+        MessageDigest digest = null;
+        byte[] bytes = null;
+
+        try{
+            digest = MessageDigest.getInstance("SHA-256");
+            bytes = dataToHash.getBytes("UTF-8");
+        }catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (byte b : bytes){
+            builder.append(String.format("%02x",b));
+        }
+        return builder.toString();
     }
 }
