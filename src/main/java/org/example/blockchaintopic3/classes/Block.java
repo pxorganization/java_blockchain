@@ -8,7 +8,7 @@ public class Block {
     private String hash;
     private final String previousHash;
     private final long timestamp;
-    private int nonce = 0;
+    private int nonce;
     private final int id = 0;
     private final String productCode;
     private final String title;
@@ -25,6 +25,14 @@ public class Block {
         this.description = builder.description;
         this.category = builder.category;
         this.hash = calculateBlockHash();
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public String getPreviousHash() {
+        return previousHash;
     }
 
     static public class Builder {
