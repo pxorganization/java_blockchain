@@ -73,10 +73,9 @@ public class Controllers {
         return results;
     }
 
-
-
-//    @GetMapping("/statistics")
-//    public List<String> getStatistics() {
-//    }
+    @GetMapping("/statistics")
+    public List<String> getStatistics(@RequestParam String title) {
+        return productService.getStatistics(title);
+    }
 
 }

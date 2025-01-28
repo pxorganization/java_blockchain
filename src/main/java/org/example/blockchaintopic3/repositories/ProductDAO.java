@@ -6,8 +6,10 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ProductDAO {
@@ -76,5 +78,10 @@ public class ProductDAO {
         } else {
             return blocks;  // If only one record, return it
         }
+    }
+
+    public List<Map<String, Object>> getStatistics(String title) {
+        String sql = "SELECT title, price, category, timestamp FROM blocks WHERE title = ?";
+        return jdbcTemplate.queryForList(sql, title);
     }
 }

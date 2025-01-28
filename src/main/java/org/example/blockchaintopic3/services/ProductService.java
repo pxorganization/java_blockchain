@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProductService {
@@ -90,5 +91,23 @@ public class ProductService {
 
     public List<Block> searchBySelection(String select, String value) {
         return productDAO.searchBySelection(select, value);
+    }
+
+    public List<String> getStatistics(String title) {
+        List<Map<String, Object>> result = productDAO.getStatistics(title);
+
+        List<String> statistics = new ArrayList<>();
+
+        for (Map<String, Object> row : result) {
+            title = (String) row.get("title");
+            Double price = (Double) row.get("price");
+            String category = (String) row.get("category");
+            Long timestamp = (Long) row.get("timestamp");
+
+            String statistic = String.format("Title: %s, Price: %.2f, Category: %s, Timestamp: %d", title, price, category, timestamp);
+            statistics.add(statistic);
+        }
+
+        return statistics;
     }
 }
