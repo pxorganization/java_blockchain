@@ -9,7 +9,7 @@ public class Block {
     private final String previousHash;
     private final long timestamp;
     private int nonce;
-    private final int id = 0;
+    private int aa;
     private final String productCode;
     private final String title;
     private final double price;
@@ -27,19 +27,11 @@ public class Block {
         this.hash = calculateBlockHash();
     }
 
-    public String getHash() {
-        return hash;
-    }
-
-    public String getPreviousHash() {
-        return previousHash;
-    }
-
     static public class Builder {
         private final String previousHash;
         private final long timestamp;
         private int nonce = 0;
-        private final int id = 0;
+        private int aa;
         private final String productCode;
         private final String title;
         private final double price;
@@ -77,7 +69,7 @@ public class Block {
 
         try{
             digest = MessageDigest.getInstance("SHA-256");
-            bytes = dataToHash.getBytes("UTF-8");
+            bytes = digest.digest(dataToHash.getBytes("UTF-8")); // Χρήση του digest.digest()
         }catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -87,5 +79,41 @@ public class Block {
             builder.append(String.format("%02x",b));
         }
         return builder.toString();
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public String getPreviousHash() {
+        return previousHash;
+    }
+
+    public int getAa() {
+        return aa;
+    }
+
+    public String getProductCode() {
+        return productCode;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 }
