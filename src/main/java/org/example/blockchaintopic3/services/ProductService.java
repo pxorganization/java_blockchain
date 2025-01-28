@@ -88,11 +88,7 @@ public class ProductService {
         return true;
     }
 
-
-
-
-//
-//    public List<Block> getBlocksByProductCode(String productCode) {
-//        return productDAO.getBlocksByProductCode(productCode);
-//    }
+    public List<Block> searchBySelection(String select, String value) {
+        return productDAO.searchBySelection(select, value);
+    }
 }

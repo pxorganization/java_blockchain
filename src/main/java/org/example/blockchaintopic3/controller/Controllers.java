@@ -5,6 +5,7 @@ import org.example.blockchaintopic3.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.example.blockchaintopic3.services.ProductService.blockChain;
@@ -35,14 +36,44 @@ public class Controllers {
         return "Block added successfully!";
     }
 
-//    @PostMapping("/add_many")
-//    public List<String> addProductMany() {
-//    }
+    @GetMapping("/search")
+    public List<Block> searchProduct(@RequestParam String select, @RequestParam String value) {
+        return productService.searchBySelection(select, value);
+    }
 
-//    @GetMapping("/search")
-//    public List<Block> searchProduct(@RequestParam String productCode) {
-//        return productService.getBlocksByProductCode(productCode);
-//    }
+
+    @PostMapping("/add_many")
+    public List<String> addProductMany(@RequestParam int quantity,
+                                       @RequestParam List<String> productCodes,
+                                       @RequestParam List<String> titles,
+                                       @RequestParam List<Double> prices,
+                                       @RequestParam List<String> descriptions,
+                                       @RequestParam List<String> categories) {
+        List<String> results = new ArrayList<>();
+
+        // Make sure the number of inputs matches the quantity
+        if (productCodes.size() != quantity || titles.size() != quantity || prices.size() != quantity
+                || descriptions.size() != quantity || categories.size() != quantity) {
+            results.add("Error: Mismatch in the number of fields provided.");
+            return results;
+        }
+
+        // Loop over the provided product details and create each product
+        for (int i = 0; i < quantity; i++) {
+            try {
+                // Call the service to create the product
+                productService.createBlock(productCodes.get(i), titles.get(i), prices.get(i),
+                        descriptions.get(i), categories.get(i));
+                results.add("Product " + (i + 1) + " added successfully.");
+            } catch (Exception e) {
+                results.add("Error adding product " + (i + 1) + ": " + e.getMessage());
+            }
+        }
+
+        return results;
+    }
+
+
 
 //    @GetMapping("/statistics")
 //    public List<String> getStatistics() {
