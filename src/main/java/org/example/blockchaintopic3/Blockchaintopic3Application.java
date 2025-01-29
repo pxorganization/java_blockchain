@@ -9,7 +9,7 @@ public class Blockchaintopic3Application {
     public static void main(String[] args) {
         SpringApplication.run(Blockchaintopic3Application.class, args);
 
-        // Τερματισμός της εφαρμογής
+        // Finish the app
         //System.exit(0);
     }
 }

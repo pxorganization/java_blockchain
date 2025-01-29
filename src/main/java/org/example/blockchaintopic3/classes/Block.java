@@ -9,14 +9,18 @@ public class Block {
     private final String previousHash;
     private final long timestamp;
     private int nonce;
-    private int aa;
     private final String productCode;
     private final String title;
     private final double price;
     private final String description;
     private final String category;
 
-    public Block(Builder builder) {
+    /**
+     * @builder.hash
+     * if has value get it from the database's query
+     * if hans't calculate it
+     */
+    private Block(Builder builder) {
         this.previousHash = builder.previousHash;
         this.timestamp = builder.timestamp;
         this.productCode = builder.productCode;
@@ -24,14 +28,18 @@ public class Block {
         this.price = builder.price;
         this.description = builder.description;
         this.category = builder.category;
-        this.hash = calculateBlockHash();
+
+        if (builder.hash != null) {
+            this.hash = builder.hash;  // get it from the database's query
+        } else {
+            this.hash = calculateBlockHash(); // calculate only if it must created
+        }
     }
 
     static public class Builder {
+        private String hash;
         private final String previousHash;
         private final long timestamp;
-        private int nonce = 0;
-        private int aa;
         private final String productCode;
         private final String title;
         private final double price;
@@ -46,6 +54,15 @@ public class Block {
             this.price = price;
             this.description = description;
             this.category = category;
+        }
+
+        /**
+         * Set the database's hash after build the object
+         * @return this to get the Builder object
+         */
+        public Builder setHash(String hash) {
+            this.hash = hash;
+            return this;
         }
 
         public Block build(){
@@ -89,10 +106,6 @@ public class Block {
         return previousHash;
     }
 
-    public int getAa() {
-        return aa;
-    }
-
     public String getProductCode() {
         return productCode;
     }
@@ -115,5 +128,19 @@ public class Block {
 
     public long getTimestamp() {
         return timestamp;
+    }
+
+    @Override
+    public String toString() {
+        return "Block{" +
+            "productCode='" + productCode + '\'' +
+            ", title='" + title + '\'' +
+            ", timestamp=" + timestamp +
+            ", price=" + price +
+            ", description='" + description + '\'' +
+            ", category='" + category + '\'' +
+            ", previousHash='" + previousHash + '\'' +
+            ", hash='" + hash + '\'' +
+            '}';
     }
 }

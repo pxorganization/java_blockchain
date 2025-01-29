@@ -17,13 +17,13 @@ public class Controllers {
     @Autowired
     private ProductService productService;
 
-    // Μέθοδος για την ανάκτηση όλων των blocks
+    // get all blocks
     @GetMapping("/all")
     public List<Block> getAllProducts() {
         return blockChain;
     }
 
-    // Μέθοδος για την προσθήκη ενός block
+    // Add one block
     @PostMapping("/add")
     public String addProduct(@RequestParam String productCode,
                              @RequestParam String title,
@@ -36,12 +36,17 @@ public class Controllers {
         return "Block added successfully!";
     }
 
+    /**
+     * Search using a select method and a value for it
+     * Valid values product_code, title, price, category, description
+     */
     @GetMapping("/search")
     public List<Block> searchProduct(@RequestParam String select, @RequestParam String value) {
         return productService.searchBySelection(select, value);
     }
 
-
+    // Add number of products and values
+    // http://localhost:8080/products/add_many?quantity=2&productCodes=B23234&titles=Product1&prices=10.0&descriptions=Description1&categories=Category1&productCodes=B23235&titles=Product2&prices=20.0&descriptions=Description2&categories=Category2
     @PostMapping("/add_many")
     public List<String> addProductMany(@RequestParam int quantity,
                                        @RequestParam List<String> productCodes,
@@ -61,7 +66,7 @@ public class Controllers {
         // Loop over the provided product details and create each product
         for (int i = 0; i < quantity; i++) {
             try {
-                // Call the service to create the product
+                // create the product
                 productService.createBlock(productCodes.get(i), titles.get(i), prices.get(i),
                         descriptions.get(i), categories.get(i));
                 results.add("Product " + (i + 1) + " added successfully.");

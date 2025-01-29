@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -20,18 +19,16 @@ public class ProductService {
     public static List<Block> blockChain = new ArrayList<>();
     public static final int prefix = 3;
 
-    // Μέθοδος για την προσθήκη ενός block
     public void createBlock(String productCode, String title, double price, String description, String category) {
 
+        //Check if previous hash is existing
         String previousHash = blockChain.isEmpty() ? "0" : blockChain.get(blockChain.size() - 1).getHash();
         long timestamp = System.currentTimeMillis();
 
         Block newBlock = new Block.Builder(previousHash, productCode, title, timestamp, price, description, category).build();
 
-        // Mine the block
         newBlock.mineBlock(prefix);
 
-        // Add the block to the in-memory blockchain
         blockChain.add(newBlock);
         System.out.println("Node " + blockChain.size() + " created successfully.");
 
@@ -40,17 +37,16 @@ public class ProductService {
         System.out.println("Block saved to database successfully.");
     }
 
-    // Μέθοδος για την ανάκτηση όλων των blocks
-    public List<Block> getAllBlocks() {
-        return productDAO.getAllBlocks();
-    }
-
+    /**
+     * Create the blockchain from database's blocks
+     */
     @PostConstruct
     public void loadBlockchainFromDatabase() {
         List<Block> tempBlockChain = productDAO.getAllBlocks();
 
-        if (!tempBlockChain.isEmpty()) { // Check if the database contains blocks
-            blockChain.clear(); // Clear in-memory blockchain before loading
+        // Check if the database contains blocks
+        if (!tempBlockChain.isEmpty()) {
+            blockChain.clear();
             blockChain.addAll(tempBlockChain);
 
             System.out.println("Blockchain loaded with " + blockChain.size() + " blocks.");
@@ -58,34 +54,28 @@ public class ProductService {
             System.out.println("No blocks found in database. Starting with an empty blockchain.");
         }
 
-        boolean isValid = isBlockchainValid();
-        System.out.println("Is chain valid? " + isValid);
+        boolean isValid = isChainValid();
+        if (!blockChain.isEmpty()) {
+            System.out.println("Is chain valid? " + isValid);
+        }
     }
 
-    public boolean isBlockchainValid() {
-        // Check if the blockchain is empty
+    /**
+     * Check if blocks in blockchain are correct connected
+     */
+    public static boolean isChainValid(){
         if (blockChain.isEmpty()) {
             System.out.println("Blockchain is empty.");
             return false;
         }
 
-        // Iterate over each block to check its validity
         for (int i = 1; i < blockChain.size(); i++) {
             Block currentBlock = blockChain.get(i);
             Block previousBlock = blockChain.get(i - 1);
-
-            // 1. Check if the hash of the current block is correct
-            if (!currentBlock.getHash().equals(currentBlock.calculateBlockHash())) {
-                System.out.println("Block " + i + " has an invalid hash.");
-                return false;
-            }
-            // 2. Check if the previousHash of the current block matches the hash of the previous block
             if (!currentBlock.getPreviousHash().equals(previousBlock.getHash())) {
-                System.out.println("Block " + i + " has an invalid previous hash.");
                 return false;
             }
         }
-        System.out.println("Blockchain is valid.");
         return true;
     }
 
@@ -95,6 +85,10 @@ public class ProductService {
 
     public List<String> getStatistics(String title) {
         List<Map<String, Object>> result = productDAO.getStatistics(title);
+
+        if (result.isEmpty()) {
+            return new ArrayList<>();
+        }
 
         List<String> statistics = new ArrayList<>();
 
@@ -107,7 +101,6 @@ public class ProductService {
             String statistic = String.format("Title: %s, Price: %.2f, Category: %s, Timestamp: %d", title, price, category, timestamp);
             statistics.add(statistic);
         }
-
         return statistics;
     }
 }

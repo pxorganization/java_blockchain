@@ -2,11 +2,9 @@ package org.example.blockchaintopic3.repositories;
 
 import org.example.blockchaintopic3.classes.Block;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -32,24 +30,25 @@ public class ProductDAO {
         );
     }
 
-
     public List<Block> getAllBlocks() {
-        String sql = "SELECT * FROM blocks";
+        String sql = "SELECT * FROM blocks ORDER BY timestamp ASC";
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Block.Builder(
-                rs.getString("previous_hash"),
-                rs.getString("product_code"),
-                rs.getString("title"),
-                rs.getLong("timestamp"),
-                rs.getDouble("price"),
-                rs.getString("description"),
-                rs.getString("category")
-        ).build());
+        return jdbcTemplate.query(sql, (rs, rowNum) ->
+                new Block.Builder(
+                        rs.getString("previous_hash"),
+                        rs.getString("product_code"),
+                        rs.getString("title"),
+                        rs.getLong("timestamp"),
+                        rs.getDouble("price"),
+                        rs.getString("description"),
+                        rs.getString("category")
+                ).setHash(rs.getString("hash")).build()
+        );
     }
 
     public List<Block> searchBySelection(String select, String value) {
 
-        // Validating the select value to avoid SQL injection
+        // Only these selections are valid
         List<String> validColumns = Arrays.asList("product_code", "title", "price", "category", "description");
 
         if (!validColumns.contains(select)) {
@@ -74,9 +73,9 @@ public class ProductDAO {
 
         // If multiple records found, return only first and last
         if(blocks.size() > 1) {
-            return Arrays.asList(blocks.get(0), blocks.get(blocks.size() - 1));  // Return first and last
+            return Arrays.asList(blocks.get(0), blocks.get(blocks.size() - 1));
         } else {
-            return blocks;  // If only one record, return it
+            return blocks;
         }
     }
 
