@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.example.blockchaintopic3.services.ProductService.blockChain;
+import static org.example.blockchaintopic3.services.ProductService.isChainValid;
 
 @RestController
 @RequestMapping("/products")
@@ -20,6 +21,7 @@ public class Controllers {
     // get all blocks
     @GetMapping("/all")
     public List<Block> getAllProducts() {
+        System.out.println(isChainValid());
         return blockChain;
     }
 
@@ -32,7 +34,7 @@ public class Controllers {
                              @RequestParam String category) {
 
         productService.createBlock(productCode, title, price, description, category);
-
+        System.out.println(isChainValid());
         return "Block added successfully!";
     }
 
@@ -74,7 +76,7 @@ public class Controllers {
                 results.add("Error adding product " + (i + 1) + ": " + e.getMessage());
             }
         }
-
+        System.out.println(isChainValid());
         return results;
     }
 

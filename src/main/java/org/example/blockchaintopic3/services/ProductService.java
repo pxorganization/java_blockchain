@@ -54,29 +54,26 @@ public class ProductService {
             System.out.println("No blocks found in database. Starting with an empty blockchain.");
         }
 
-        boolean isValid = isChainValid();
-        if (!blockChain.isEmpty()) {
-            System.out.println("Is chain valid? " + isValid);
-        }
+        System.out.println(isChainValid());
     }
 
     /**
      * Check if blocks in blockchain are correct connected
      */
-    public static boolean isChainValid(){
+    public static String isChainValid(){
         if (blockChain.isEmpty()) {
             System.out.println("Blockchain is empty.");
-            return false;
+            return "false";
         }
 
         for (int i = 1; i < blockChain.size(); i++) {
             Block currentBlock = blockChain.get(i);
             Block previousBlock = blockChain.get(i - 1);
             if (!currentBlock.getPreviousHash().equals(previousBlock.getHash())) {
-                return false;
+                return "false";
             }
         }
-        return true;
+        return "true";
     }
 
     public List<Block> searchBySelection(String select, String value) {
