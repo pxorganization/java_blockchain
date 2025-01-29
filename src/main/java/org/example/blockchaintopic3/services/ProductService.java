@@ -17,7 +17,7 @@ public class ProductService {
     private ProductDAO productDAO;
 
     public static List<Block> blockChain = new ArrayList<>();
-    public static final int prefix = 3;
+    public static final int prefix = 5;
 
     public void createBlock(String productCode, String title, double price, String description, String category) {
 
